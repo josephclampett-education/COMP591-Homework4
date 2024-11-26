@@ -42,7 +42,7 @@ contours = contours[0] if len(contours) == 2 else contours[1]
 subtitle_texts = []
 outFrame = np.copy(inFrame)
 calIndex = 0
-for i in range(1, len(contours)): # Start from 1 to skip the background (label 0)    
+for i in range(1, len(contours)):   
     
     rotrect = cv2.minAreaRect(contours[i])
     

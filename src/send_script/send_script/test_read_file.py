@@ -40,7 +40,7 @@ labelCount, labels = cv2.connectedComponents(inFrame_binary)
 subtitle_texts = []
 outFrame = np.copy(inFrame)
 calIndex = 0
-for label in range(1, labelCount): # Start from 1 to skip the background (label 0)
+for label in range(1, labelCount):
     mask = (labels == label).astype("uint8") * 255
     
     M = cv2.moments(mask)

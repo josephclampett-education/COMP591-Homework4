@@ -60,26 +60,30 @@ class ImageSub(Node):
         inFrame_grayscale = cv2.cvtColor(inFrame, cv2.COLOR_BGR2GRAY)
         inFrame_blurred = cv2.GaussianBlur(inFrame_grayscale, (5, 5), 0)
         _, inFrame_binary = cv2.threshold(inFrame_blurred, 140, 255, cv2.THRESH_BINARY)
-        labelCount, labels = cv2.connectedComponents(inFrame_binary)
+        
+        contours = cv2.findContours(inFrame_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        contours = contours[0] if len(contours) == 2 else contours[1]
 
         subtitle_texts = []
         outFrame = np.copy(inFrame)
-        for label in range(1, labelCount): # Start from 1 to skip the background (label 0)
-            mask = (labels == label).astype("uint8") * 255
-            
-            M = cv2.moments(mask)
-
-            area = M["m00"]
-            if area < AREA_THRESHOLD:
+        for i in range(1, len(contours)):
+            rotrect = cv2.minAreaRect(contours[i])
+                
+            area = rotrect[1][0] * rotrect[1][1]
+            if area < 2000:
                 continue
 
-            Cx = M["m10"] / M["m00"]
-            Cy = M["m01"] / M["m00"]
+            principal = rotrect[-1]
+            # if angle < -45:
+            #     angle = -(90 + angle)
+            # else:
+            #     angle = -angle
+            principal = np.deg2rad(principal)
 
-            principal = 0.5 * math.atan2(2 * M["mu11"], M["mu20"] - M["mu02"])
+            Cx, Cy = rotrect[0][0], rotrect[0][1]
 
             # Draw Debug Info
-            DrawDebugMarker(outFrame, area, label, Cx, Cy, principal)
+            DrawDebugMarker(outFrame, area, i, Cx, Cy, principal)
 
             # Target
             physicalPosition = np.dot(np.array([Cx, Cy, 1.0]), CalibrationMatrix)
