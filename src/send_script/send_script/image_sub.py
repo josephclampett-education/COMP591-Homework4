@@ -39,6 +39,7 @@ def DrawDebugMarker(frame, area, label, Cx, Cy, theta):
 
 def SendSetOrientationScript(x, y, z, theta):
     positionInfo = f"{x}, {y}, {z}, -180.00, 0.0, {135.0 + theta}"
+    print(positionInfo)
     outScript = f"PTP(\"CPP\",{positionInfo},100,200,0,false)"
     send_script(outScript)
 
@@ -52,6 +53,7 @@ class ImageSub(Node):
 
         bridge = CvBridge()
         inFrame = bridge.imgmsg_to_cv2(data)
+
         
         CalibrationMatrix = np.load("src/debug/CALIBRATION_MATRIX.npy")
 
@@ -59,14 +61,19 @@ class ImageSub(Node):
 
         inFrame_grayscale = cv2.cvtColor(inFrame, cv2.COLOR_BGR2GRAY)
         inFrame_blurred = cv2.GaussianBlur(inFrame_grayscale, (5, 5), 0)
-        _, inFrame_binary = cv2.threshold(inFrame_blurred, 140, 255, cv2.THRESH_BINARY)
-        
+        _, inFrame_binary = cv2.threshold(inFrame_blurred, 120, 255, cv2.THRESH_BINARY)
+        cv2.imwrite(f"src/debug/image_binary.jpg", inFrame_binary)
+
         contours = cv2.findContours(inFrame_binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
         contours = contours[0] if len(contours) == 2 else contours[1]
 
+
         subtitle_texts = []
         outFrame = np.copy(inFrame)
-        for i in range(1, len(contours)):
+        towerX = None
+        towerY = None
+        block_index = 0
+        for i in range(len(contours)):
             rotrect = cv2.minAreaRect(contours[i])
                 
             area = rotrect[1][0] * rotrect[1][1]
@@ -74,11 +81,6 @@ class ImageSub(Node):
                 continue
 
             principal = rotrect[-1]
-            # if angle < -45:
-            #     angle = -(90 + angle)
-            # else:
-            #     angle = -angle
-            principal = np.deg2rad(principal)
 
             Cx, Cy = rotrect[0][0], rotrect[0][1]
 
@@ -90,11 +92,23 @@ class ImageSub(Node):
             xPP = np.clip(physicalPosition[0], -103, 680)
             yPP = np.clip(physicalPosition[1], -83, 704)
 
+            # xPP = xPP - math.cos(principal) * 4
+            # yPP = yPP - math.sin(principal) * 4
+
+            if towerX == None or towerY == None:
+                towerX = xPP
+                towerY = yPP
+
             set_io(0.0)
-            SendSetOrientationScript(xPP, yPP, 730)
+            SendSetOrientationScript(xPP, yPP, 250, -principal)
+            SendSetOrientationScript(xPP, yPP, 110, -principal)
             set_io(1.0)
-            SendSetOrientationScript(xPP, yPP, 710)
+            SendSetOrientationScript(xPP, yPP, 250, -principal)
+            SendSetOrientationScript(towerX, towerY, 250, 0)
+            SendSetOrientationScript(towerX, towerY, block_index * 25.4 + 115, 0)
             set_io(0.0)
+            SendSetOrientationScript(towerX, towerY, 250, 0)
+            block_index = block_index + 1
         
         cv2.imwrite(f"src/debug/image_annotated.jpg", outFrame)
 

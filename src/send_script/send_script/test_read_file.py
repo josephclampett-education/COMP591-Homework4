@@ -7,7 +7,7 @@ import os
 AREA_THRESHOLD = 100000
 
 outPixelPositions = np.empty((4, 3))
-outPhysicalPositions = np.array([[230.41, 704.27, 1.0], [680.93, 243, 1.0], [-103.44, 357.61, 1.0], [333, -83.4, 1.0]])
+outPhysicalPositions = np.array([[227.92, 693.22, 1.0], [677.43, 245.73, 1.0], [-102.37, 360.68, 1.0], [337.09, -91.91, 1.0]])
 
 subtitle_texts = []
 def DrawDebugMarker(frame, area, label, Cx, Cy, theta):
@@ -40,7 +40,7 @@ labelCount, labels = cv2.connectedComponents(inFrame_binary)
 subtitle_texts = []
 outFrame = np.copy(inFrame)
 calIndex = 0
-for label in range(1, labelCount):
+for label in range(1, labelCount): # Start from 1 to skip the background (label 0)
     mask = (labels == label).astype("uint8") * 255
     
     M = cv2.moments(mask)
@@ -61,7 +61,7 @@ for label in range(1, labelCount):
     DrawDebugMarker(outFrame, area, label, Cx, Cy, principal)
 
 calibrationMatrix, residuals, rank, singularValues = np.linalg.lstsq(outPixelPositions, outPhysicalPositions)
-np.save(f"debug/CALIBRATION_MATRIX", calibrationMatrix)
+np.save('debug/CALIBRATION_MATRIX', calibrationMatrix)
 
-cv2.imshow("image", outFrame)
-cv2.waitKey(0)
+# cv2.imshow("image", outFrame)
+# cv2.waitKey(0)

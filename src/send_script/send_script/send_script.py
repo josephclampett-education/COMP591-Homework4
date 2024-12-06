@@ -54,6 +54,38 @@ def main(args=None):
     script1 = "PTP(\"CPP\"," + targetP1+",100,200,0,false)"
     send_script(script1)
 
+    # targetP1 = "230.00, 230, 110, -180.00, 0.0, 135.00"
+    # script1 = "PTP(\"CPP\"," + targetP1+",100,200,0,false)"
+    # send_script(script1)
+
+    # targetP1 = "230.00, 230, 730, -180.00, 0.0, 135.00"
+    # script1 = "PTP(\"CPP\"," + targetP1+",100,200,0,false)"
+    # send_script(script1)
+
+    # targetP1 = "100.00, 230, 730, -180.00, 0.0, 135.00"
+    # script1 = "PTP(\"CPP\"," + targetP1+",100,200,0,false)"
+    # send_script(script1)
+
+    # targetP1 = "100.00, 230, 110, -180.00, 0.0, 135.00"
+    # script1 = "PTP(\"CPP\"," + targetP1+",100,200,0,false)"
+    # send_script(script1)
+
+    # targetP1 = "100.00, 230, 730, -180.00, 0.0, 135.00"
+    # script1 = "PTP(\"CPP\"," + targetP1+",100,200,0,false)"
+    # send_script(script1)
+
+    # targetP1 = "230.00, 100, 730, -180.00, 0.0, 135.00"
+    # script1 = "PTP(\"CPP\"," + targetP1+",100,200,0,false)"
+    # send_script(script1)
+
+    # targetP1 = "230.00, 100, 110, -180.00, 0.0, 135.00"
+    # script1 = "PTP(\"CPP\"," + targetP1+",100,200,0,false)"
+    # send_script(script1)
+
+    # targetP1 = "230.00, 100, 730, -180.00, 0.0, 135.00"
+    # script1 = "PTP(\"CPP\"," + targetP1+",100,200,0,false)"
+    # send_script(script1)
+
     # # Z = 100 should be the table
     # # c is what we need to rotate
     # targetP1 = "230.00, 230, 101, -180.00, 0.0, 100.00"
